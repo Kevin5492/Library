@@ -4,8 +4,6 @@ public class UserRequestDTO {
 	 private String phoneNumber;
 	    private String password;
 	    private String userName;
-
-	    // Getter 與 Setter
 	    public String getPhoneNumber() {
 	        return phoneNumber;
 	    }

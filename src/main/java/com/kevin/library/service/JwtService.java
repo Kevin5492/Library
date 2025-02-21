@@ -43,4 +43,12 @@ public class JwtService {
                  .compact();
 
     }
+    public Integer getUserIdFromToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+                            .setSigningKey(key)
+                            .build()
+                            .parseClaimsJws(token)
+                            .getBody();
+        return claims.get("userId", Integer.class);
+    }
 }
