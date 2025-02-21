@@ -30,7 +30,8 @@ public class BookService {
 	//找到使用者已經借的書
 	public List<CurrentBorrowBooksDTO>getUserCurrentBorrowredBooks(Integer userId){
 		try {
-			return bookRepo.showCurrentBorrowBooks(userId);
+			System.out.println("userId service: "+userId);
+			return bookRepo.showCurrentBorrowBooks(userId); 
 		}catch(Exception e) {
 			e.printStackTrace();
 			return null;
@@ -39,7 +40,9 @@ public class BookService {
 	@Transactional //借一本書
 	public Integer borrowABook(String isbn,Integer userId) {
 		try {
-			return bookRepo.borrowABook(isbn,userId);
+Date currentTime = new Date();
+System.out.print(currentTime);
+			return bookRepo.borrowABook(isbn,userId,currentTime); //回傳 inventoryId
 		}catch(Exception e) {
 			e.printStackTrace();
 			return null;
@@ -51,7 +54,7 @@ public class BookService {
 		if(userId.equals(bookRepo.getUserIdFromBorrowRecord(borrowRecordId))) {
 			try {
 				
-				return bookRepo.returnABook(borrowRecordId,new Date());
+				return bookRepo.returnABook(borrowRecordId,new Date()); //回傳 0 是成功
 			}catch(Exception e) {
 				e.printStackTrace();
 				return null;

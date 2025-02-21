@@ -1,7 +1,6 @@
 package com.kevin.library.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,10 +8,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kevin.library.dto.UserRequestDTO;
 import com.kevin.library.dto.UserReponseDTO;
+import com.kevin.library.dto.UserRequestDTO;
 import com.kevin.library.service.JwtService;
 import com.kevin.library.service.UserService;
+import com.kevin.library.util.XSSFilter;
 @RequestMapping("/user")
 @RestController
 public class UserController {
@@ -22,13 +22,13 @@ public class UserController {
 	@Autowired
 	private JwtService jwtService;
 	
-	@PostMapping("/createUser")
+	@PostMapping("/createUser") //建立使用者
 	public ResponseEntity<UserReponseDTO> createUser(@RequestBody UserRequestDTO request){
 		try {
 			 UserReponseDTO result = userService.insertNewUser(
-	                    request.getPhoneNumber(),
-	                    request.getPassword(),
-	                    request.getUserName());
+					 XSSFilter.sanitize(request.getPhoneNumber()),//避免XSS
+					 XSSFilter.sanitize(request.getPassword()),
+					 XSSFilter.sanitize(request.getUserName()));
 	            return ResponseEntity.status(HttpStatus.CREATED).body(result);
 		}catch(Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -36,7 +36,7 @@ public class UserController {
 		}
 	}
 	
-	@PostMapping("/login")
+	@PostMapping("/login") //登入帳號
 	public ResponseEntity<UserReponseDTO> userLogin(@RequestBody UserRequestDTO request){
 		
 		try {

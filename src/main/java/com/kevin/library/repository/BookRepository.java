@@ -10,7 +10,7 @@ import com.kevin.library.model.Book;
 
 public interface BookRepository extends JpaRepository<Book, String>,BookDAO {
 	@Procedure(name="BorrowABook")
-public Integer borrowABook(String isbn,Integer userId);
+public Integer borrowABook(String isbn,Integer userId,Date currentTime);
 	@Procedure(name="CheckIfBookIsEnough")
 public Integer checkIfBookIsEnough(String isbn);
 	

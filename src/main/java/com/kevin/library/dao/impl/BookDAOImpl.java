@@ -9,6 +9,7 @@ import com.kevin.library.dto.BorrowableBooksDTO;
 import com.kevin.library.dto.CurrentBorrowBooksDTO;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.ParameterMode;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.StoredProcedureQuery;
 
@@ -44,7 +45,9 @@ public class BookDAOImpl implements BookDAO {
 	public List<CurrentBorrowBooksDTO> showCurrentBorrowBooks(Integer userId){
 		try {
 			StoredProcedureQuery query = entityManager.createStoredProcedureQuery("ShowCurrentBorrowBooks");
-		    query.execute();
+			query.registerStoredProcedureParameter("userId", Integer.class, ParameterMode.IN);
+			query.setParameter("userId", userId); 
+			query.execute();
 		    
 		    @SuppressWarnings("unchecked")
 		    List<Object[]> resultList = query.getResultList();

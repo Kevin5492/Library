@@ -1,6 +1,7 @@
 package com.kevin.library.service;
 
 import java.util.Date;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,6 +25,10 @@ public class UserService {
 			String phoneNumber,
             String password,
             String userName) {
+		String phonePattern = "^09\\d{8}$"; // 驗證手機格式
+		if(!Pattern.matches(phonePattern, phoneNumber)) {
+			return new UserReponseDTO(false,"手機號碼格式錯誤",null);
+		}
 		if(!userRepo.checkIfPhoneIsValid(phoneNumber)) {
 			try {
 				String encodedPwd = pwdEncoder.encode(password);

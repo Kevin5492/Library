@@ -25,6 +25,6 @@ PasswordEncoder passwordEncoder() {
 @Override
 public void addInterceptors(@NonNull InterceptorRegistry registry) {
 	
-	registry.addInterceptor(jwtInterceptor).addPathPatterns("/book/borrow");
+	registry.addInterceptor(jwtInterceptor).addPathPatterns("/book/showBorrowedBook");
 }
 }
