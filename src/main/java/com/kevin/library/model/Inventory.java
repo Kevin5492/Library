@@ -10,6 +10,8 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -29,10 +31,12 @@ import lombok.Setter;
 public class Inventory {
 	@Id
 	@Column(name = "inventory_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer inventoryId;
 	
-	@Column(name = "isbn")
-	private String isbn;
+	@ManyToOne
+	@JoinColumn(name = "isbn", referencedColumnName = "isbn")
+	private Book book;
 	
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@Temporal(TemporalType.TIMESTAMP)
@@ -40,12 +44,10 @@ public class Inventory {
 	private Date storeTime;
 	
 	@ManyToOne
-	@JoinColumn(name = "status_id", referencedColumnName = "state_id")
+	@JoinColumn(name = "status_id", referencedColumnName = "status_id")
 	private Status status;
 	
-	@ManyToOne
-	@JoinColumn(name = "isbn", referencedColumnName = "isbn")
-	private Book book;
+	
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "inventory", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	private Set<BorrowingRecord> borrowingRecord = new HashSet<>();

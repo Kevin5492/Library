@@ -37,6 +37,6 @@ public class User {
 	@Column(name = "last_login_time")
 	private Date lastLoginTime;
 	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "[user]", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	private Set<BorrowingRecord> BorrowingRecord = new HashSet<>();
 }
