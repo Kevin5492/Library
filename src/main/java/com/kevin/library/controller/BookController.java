@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +15,7 @@ import com.kevin.library.dto.BookRequestDTO;
 import com.kevin.library.dto.BookResponseDTO;
 import com.kevin.library.dto.BorrowableBooksDTO;
 import com.kevin.library.dto.CurrentBorrowBooksDTO;
+import com.kevin.library.dto.ReturnRecordDTO;
 import com.kevin.library.service.BookService;
 import com.kevin.library.service.JwtService;
 
@@ -36,10 +36,10 @@ public class BookController {
 		
 			List<BorrowableBooksDTO> bookList = bookService.getBorrowableBooks(searchInput);
 			if(bookList!=null) {
-				return ResponseEntity.status(HttpStatus.CREATED).body(new BookResponseDTO(true,"查詢成功",bookList,null));
+				return ResponseEntity.status(HttpStatus.CREATED).body(new BookResponseDTO(true,"查詢成功",bookList,null,null));
 			}
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new BookResponseDTO(false, "發生錯誤", null,null));
+                    .body(new BookResponseDTO(false, "發生錯誤", null,null,null));
 	}
 	@GetMapping("/showBorrowedBook") // 顯示已經借閱的書
 	public ResponseEntity<BookResponseDTO>showBorrowedBook(HttpServletRequest request){
@@ -47,10 +47,24 @@ public class BookController {
 	        System.out.println("userId: "+userId);
 	        	List<CurrentBorrowBooksDTO> borrowedBookList = bookService.getUserCurrentBorrowredBooks(userId);
 	        	if (borrowedBookList!=null) {
-	        		return ResponseEntity.status(HttpStatus.CREATED).body(new BookResponseDTO(true,"查詢成功",null,borrowedBookList));
+	        		return ResponseEntity.status(HttpStatus.CREATED).body(new BookResponseDTO(true,"查詢成功",null,borrowedBookList,null));
 	        	}
 	        	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                    .body(new BookResponseDTO(false, "發生錯誤", null,null));
+	                    .body(new BookResponseDTO(false, "發生錯誤", null,null,null));
+	  
+	}
+	
+	@GetMapping("/showReturnRecord") // 顯示還書紀錄
+	public ResponseEntity<BookResponseDTO>showReturnRecord(HttpServletRequest request){
+		Integer userId = (Integer) request.getAttribute("userId");
+	        System.out.println("userId: "+userId);
+	        	List<ReturnRecordDTO> returnRecordList = bookService.getUserReturnRecord(userId);
+System.out.println(returnRecordList);
+	        	if (returnRecordList!=null) {
+	        		return ResponseEntity.status(HttpStatus.CREATED).body(new BookResponseDTO(true,"查詢成功",null,null,returnRecordList));
+	        	}
+	        	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                    .body(new BookResponseDTO(false, "發生錯誤", null,null,null));
 	  
 	}
 	@PostMapping("/borrowABook") // 借一本書
@@ -61,10 +75,10 @@ public class BookController {
 	        System.out.println("isbn"+isbn);
 	        Integer inventoryId = bookService.borrowABook(isbn,userId);
 	        if(inventoryId!=null) {
-	        	return ResponseEntity.status(HttpStatus.CREATED).body(new BookResponseDTO(true,"借閱成功，書籍編號: "+inventoryId,null,null));
+	        	return ResponseEntity.status(HttpStatus.CREATED).body(new BookResponseDTO(true,"借閱成功，書籍編號: "+inventoryId,null,null,null));
 	        }
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new BookResponseDTO(false, "發生錯誤", null,null));
+                    .body(new BookResponseDTO(false, "發生錯誤", null,null,null));
 	}
 	@PostMapping("/returnABook") // 借一本書
 	public ResponseEntity<BookResponseDTO> returnABook(HttpServletRequest request,@RequestBody BookRequestDTO requestDTO){
@@ -73,17 +87,17 @@ public class BookController {
 	        Integer borrowingRecordId = requestDTO.getBorrowingRecordId();
 	        if(borrowingRecordId == null ) {
 	        	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                    .body(new BookResponseDTO(false, "您歸還的書籍並不正確", null,null));
+	                    .body(new BookResponseDTO(false, "您歸還的書籍並不正確", null,null,null));
 	        }
 	        Integer result = bookService.returnABook(borrowingRecordId,userId);
 	        if(result == null ) {
 	        	System.out.println("是null");
 	        	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                    .body(new BookResponseDTO(false, "發生錯誤", null,null));
+	                    .body(new BookResponseDTO(false, "發生錯誤", null,null,null));
 	        }
 	        System.out.println("result: "+result);
 	        
-	        return ResponseEntity.status(HttpStatus.CREATED).body(new BookResponseDTO(true,"還書成功",null,null));
+	        return ResponseEntity.status(HttpStatus.CREATED).body(new BookResponseDTO(true,"還書成功",null,null,null));
 	        
 	}
 		

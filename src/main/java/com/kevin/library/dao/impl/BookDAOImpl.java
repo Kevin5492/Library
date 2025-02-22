@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import com.kevin.library.dao.BookDAO;
 import com.kevin.library.dto.BorrowableBooksDTO;
 import com.kevin.library.dto.CurrentBorrowBooksDTO;
+import com.kevin.library.dto.ReturnRecordDTO;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.ParameterMode;
@@ -69,5 +70,30 @@ public class BookDAOImpl implements BookDAO {
 		}
 		
 	}
+	@Override //查看還書紀錄
+	public List<ReturnRecordDTO> getReturnRecord(Integer userId){
+		try {
+			StoredProcedureQuery query = entityManager.createStoredProcedureQuery("GetReturnRecord");
+			query.registerStoredProcedureParameter("userId", Integer.class, ParameterMode.IN);
+			query.setParameter("userId", userId); 
+			query.execute();
+		    
+		    @SuppressWarnings("unchecked")
+		    List<Object[]> resultList = query.getResultList();
+		    List<ReturnRecordDTO> dtos = resultList.stream().map(row -> new ReturnRecordDTO(
+		            (String) row[0], // isbn
+		            (Integer) row[1],// inventoryId
+		            (String) row[2], // name
+		            (String) row[3], // author
+		            (String) row[4], // introduction
+		            (Date) row[5],   // returnTime
+		            (Integer)row[6]  // borrowingRecordId
+		    )).collect(Collectors.toList());
+		    return dtos;
+		}catch(Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	};
 	
 }

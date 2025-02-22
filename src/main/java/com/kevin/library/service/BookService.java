@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.kevin.library.dto.BorrowableBooksDTO;
 import com.kevin.library.dto.CurrentBorrowBooksDTO;
+import com.kevin.library.dto.ReturnRecordDTO;
 import com.kevin.library.repository.BookRepository;
 
 import jakarta.transaction.Transactional;
@@ -31,6 +32,16 @@ public class BookService {
 	public List<CurrentBorrowBooksDTO>getUserCurrentBorrowredBooks(Integer userId){
 		try {
 			return bookRepo.showCurrentBorrowBooks(userId); 
+		}catch(Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	//查詢還書紀錄
+	public List<ReturnRecordDTO>getUserReturnRecord(Integer userId){
+		try {
+			System.out.println("getUserReturnRecord user id "+ userId);
+			return bookRepo.getReturnRecord(userId); 
 		}catch(Exception e) {
 			e.printStackTrace();
 			return null;

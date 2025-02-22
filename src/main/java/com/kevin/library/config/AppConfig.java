@@ -34,6 +34,7 @@ public class AppConfig implements WebMvcConfigurer{
 				registry.addInterceptor(jwtInterceptor) //添加攔截器
 				.addPathPatterns("/book/showBorrowedBook")//添加攔截路徑
 				.addPathPatterns("/book/borrowABook")
+				.addPathPatterns("/book/showReturnRecord")
 				.addPathPatterns("/book/returnABook");
 			}
 	
