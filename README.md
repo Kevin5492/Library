@@ -1,0 +1,3 @@
+資料夾DM中有兩個檔案
+createLibraryDatebase.sql 用來建立資料庫
+libraryStoredProcedure.sql 用來建立預存程序
