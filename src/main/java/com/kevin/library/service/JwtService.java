@@ -4,6 +4,8 @@ import java.security.Key;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,20 @@ public class JwtService {
         String secret = "MyJwtAuthKey123456MyJwtAuthKey123456";
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
     }
+    //存放已經登出的Jwt
+    private final Set<String> blacklistedTokens = new HashSet<>();
+    
+    //把登出的Jwt放到Set
+    public void blacklistToken(String token) {
+        blacklistedTokens.add(token);
+    }
+    
+    //檢查Jwt有沒有在Set
+    public boolean isTokenBlacklisted(String token) {
+        return blacklistedTokens.contains(token);
+    }
+    
+    //驗證token
     public boolean validateToken(String token) {
         try {
             Claims claims = Jwts.parserBuilder()
@@ -32,6 +48,7 @@ public class JwtService {
             return false;
         }
     }
+    //產生token
     public String generateToken(Integer userId) throws Exception{
     	 LocalDateTime dateTime = LocalDateTime.now().plusMinutes(10);
          Date expireTime = Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
@@ -43,6 +60,7 @@ public class JwtService {
                  .compact();
 
     }
+    //從token取出user id
     public Integer getUserIdFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
                             .setSigningKey(key)

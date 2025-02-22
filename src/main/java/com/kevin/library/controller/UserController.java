@@ -13,6 +13,8 @@ import com.kevin.library.dto.UserRequestDTO;
 import com.kevin.library.service.JwtService;
 import com.kevin.library.service.UserService;
 import com.kevin.library.util.XSSFilter;
+
+import jakarta.servlet.http.HttpServletRequest;
 @RequestMapping("/user")
 @RestController
 public class UserController {
@@ -25,10 +27,16 @@ public class UserController {
 	@PostMapping("/createUser") //建立使用者
 	public ResponseEntity<UserReponseDTO> createUser(@RequestBody UserRequestDTO request){
 		try {
-			 UserReponseDTO result = userService.insertNewUser(
-					 XSSFilter.sanitize(request.getPhoneNumber()),//避免XSS
-					 XSSFilter.sanitize(request.getPassword()),
-					 XSSFilter.sanitize(request.getUserName()));
+			
+			String sanitizedPhone = XSSFilter.sanitize(request.getPhoneNumber());//避免XSS
+	        String sanitizedPassword = XSSFilter.sanitize(request.getPassword());
+	        String sanitizedUserName = XSSFilter.sanitize(request.getUserName());
+
+	        if (sanitizedPhone == null || sanitizedPassword == null || sanitizedUserName == null) { //避免有空值
+	            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+	                .body(new UserReponseDTO(false, "請填寫完整資料", null));
+	        }
+	        UserReponseDTO result = userService.insertNewUser(sanitizedPhone, sanitizedPassword, sanitizedUserName);
 	            return ResponseEntity.status(HttpStatus.CREATED).body(result);
 		}catch(Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -38,7 +46,7 @@ public class UserController {
 	
 	@PostMapping("/login") //登入帳號
 	public ResponseEntity<UserReponseDTO> userLogin(@RequestBody UserRequestDTO request){
-		
+		System.out.print("有被呼叫"); //測試有沒有被呼叫
 		try {
 			UserReponseDTO result = userService.checkPassword( request.getPhoneNumber(), request.getPassword());
 			if (result.success()) {
@@ -55,4 +63,14 @@ public class UserController {
                    .body(new UserReponseDTO(false, "發生錯誤", null));
 		}
 	}
+	
+    @PostMapping("/logout")
+    public ResponseEntity<UserReponseDTO> userLogout(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) { //抓到JWT 並放到黑名單中
+            String token = authHeader.substring(7);
+            jwtService.blacklistToken(token); 
+        }
+        return ResponseEntity.ok().body(new UserReponseDTO(true, "登出成功", null));
+    }
 }

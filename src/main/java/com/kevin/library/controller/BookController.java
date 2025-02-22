@@ -20,7 +20,7 @@ import com.kevin.library.service.BookService;
 import com.kevin.library.service.JwtService;
 
 import jakarta.servlet.http.HttpServletRequest;
-@CrossOrigin
+
 @RestController
 @RequestMapping("/book")
 public class BookController {
@@ -30,11 +30,11 @@ public class BookController {
 	@Autowired
 	private JwtService jwtService;
 	
-	@GetMapping("/showAllBooks") //顯示所有可以借閱的書
-	public ResponseEntity<BookResponseDTO>showAllBorrowableBooks() {
-		System.out.println("有呼叫");
+	@PostMapping("/showAllBooks") //顯示所有可以借閱的書
+	public ResponseEntity<BookResponseDTO>showAllBorrowableBooks(@RequestBody BookRequestDTO requestDTO) {
+		String searchInput = requestDTO.getSearchInput() ==null ? "" : requestDTO.getSearchInput();
 		
-			List<BorrowableBooksDTO> bookList = bookService.getBorrowableBooks();
+			List<BorrowableBooksDTO> bookList = bookService.getBorrowableBooks(searchInput);
 			if(bookList!=null) {
 				return ResponseEntity.status(HttpStatus.CREATED).body(new BookResponseDTO(true,"查詢成功",bookList,null));
 			}
@@ -43,12 +43,7 @@ public class BookController {
 	}
 	@GetMapping("/showBorrowedBook") // 顯示已經借閱的書
 	public ResponseEntity<BookResponseDTO>showBorrowedBook(HttpServletRequest request){
-		  String authHeader = request.getHeader("Authorization");
-	        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BookResponseDTO(false, "Missing or invalid token", null,null));
-	        }
-	        String token = authHeader.substring(7);
-	        Integer userId = jwtService.getUserIdFromToken(token);
+		Integer userId = (Integer) request.getAttribute("userId");
 	        System.out.println("userId: "+userId);
 	        	List<CurrentBorrowBooksDTO> borrowedBookList = bookService.getUserCurrentBorrowredBooks(userId);
 	        	if (borrowedBookList!=null) {
@@ -58,15 +53,10 @@ public class BookController {
 	                    .body(new BookResponseDTO(false, "發生錯誤", null,null));
 	  
 	}
-	@PostMapping("/borrowABook") 
+	@PostMapping("/borrowABook") // 借一本書
 	public ResponseEntity<BookResponseDTO> borrowABook(HttpServletRequest request,@RequestBody BookRequestDTO requestDTO){
 		
-		  String authHeader = request.getHeader("Authorization");
-	        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BookResponseDTO(false, "Missing or invalid token", null,null));
-	        }
-	        String token = authHeader.substring(7);
-	        Integer userId = jwtService.getUserIdFromToken(token);
+		Integer userId = (Integer) request.getAttribute("userId");
 	        String isbn = requestDTO.getIsbn();
 	        System.out.println("isbn"+isbn);
 	        Integer inventoryId = bookService.borrowABook(isbn,userId);
@@ -76,21 +66,21 @@ public class BookController {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new BookResponseDTO(false, "發生錯誤", null,null));
 	}
-	@PostMapping("/returnABook")
+	@PostMapping("/returnABook") // 借一本書
 	public ResponseEntity<BookResponseDTO> returnABook(HttpServletRequest request,@RequestBody BookRequestDTO requestDTO){
-		 String authHeader = request.getHeader("Authorization");
-	        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BookResponseDTO(false, "Missing or invalid token", null,null));
+		
+	        Integer userId = (Integer) request.getAttribute("userId");
+	        Integer borrowingRecordId = requestDTO.getBorrowingRecordId();
+	        Integer result = bookService.returnABook(borrowingRecordId,userId);
+	        if(result == null ) {
+	        	System.out.println("是null");
+	        	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                    .body(new BookResponseDTO(false, "發生錯誤", null,null));
 	        }
-	        String token = authHeader.substring(7);
-	        Integer userId = jwtService.getUserIdFromToken(token);
-	        Integer borrowRecordId = requestDTO.getBorrowRecordId();
-	        Integer result = bookService.returnABook(borrowRecordId,userId);
-	        if(result == 0 ) {
-	        	return ResponseEntity.status(HttpStatus.CREATED).body(new BookResponseDTO(true,"還書成功",null,null));
-	        }
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new BookResponseDTO(false, "發生錯誤", null,null));
+	        System.out.println("result: "+result);
+	        
+	        return ResponseEntity.status(HttpStatus.CREATED).body(new BookResponseDTO(true,"還書成功",null,null));
+	        
 	}
 		
 }

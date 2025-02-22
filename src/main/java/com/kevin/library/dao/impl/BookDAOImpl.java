@@ -17,10 +17,12 @@ public class BookDAOImpl implements BookDAO {
 	@PersistenceContext
 	private EntityManager entityManager;
 	@Override //取得所有可以借的書
-	public List<BorrowableBooksDTO> getBorrowableBooks() {
+	public List<BorrowableBooksDTO> getBorrowableBooks(String searchInput) {
 		try {
-			StoredProcedureQuery query = entityManager.createStoredProcedureQuery("GetBorrowableBooks");
-		    query.execute();
+			StoredProcedureQuery query = entityManager.createStoredProcedureQuery("GetBorrowableBooksWithSearch");
+			query.registerStoredProcedureParameter("searchInput", String.class, ParameterMode.IN);
+			query.setParameter("searchInput", searchInput); 
+			query.execute();
 		    
 		    @SuppressWarnings("unchecked")
 		    List<Object[]> resultList = query.getResultList();

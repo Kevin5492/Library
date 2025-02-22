@@ -9,10 +9,10 @@ import com.kevin.library.dao.BookDAO;
 import com.kevin.library.model.Book;
 
 public interface BookRepository extends JpaRepository<Book, String>,BookDAO {
-	@Procedure(name="BorrowABook")
-public Integer borrowABook(String isbn,Integer userId,Date currentTime);
-	@Procedure(name="CheckIfBookIsEnough")
-public Integer checkIfBookIsEnough(String isbn);
+	@Procedure(name="BorrowABook") //借一本書
+    public Integer borrowABook(String isbn,Integer userId,Date currentTime);
+	@Procedure(name="CheckIfBookIsEnough") //檢查書夠不夠借
+    public Integer checkIfBookIsEnough(String isbn);
 	
 	@Procedure(name="ReturnABook")
 	public Integer returnABook(Integer borrowRecordId,Date currentTime);

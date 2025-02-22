@@ -19,9 +19,9 @@ public class BookService {
 	private BookRepository bookRepo;
 	
 	@Transactional //找到所有可以借的書
-	public List<BorrowableBooksDTO> getBorrowableBooks(){
+	public List<BorrowableBooksDTO> getBorrowableBooks(String searchInput){
 		try {
-			return bookRepo.getBorrowableBooks();
+			return bookRepo.getBorrowableBooks(searchInput);
 		}catch(Exception e) {
 			e.printStackTrace();
 			return null;
@@ -50,16 +50,20 @@ System.out.print(currentTime);
 		
 	}
 	@Transactional //還一本書
-	public Integer returnABook(Integer borrowRecordId,Integer userId) {
-		if(userId.equals(bookRepo.getUserIdFromBorrowRecord(borrowRecordId))) {
+	public Integer returnABook(Integer borrowingRecordId,Integer userId) {
+		System.out.println("borrowRecordId: "+borrowingRecordId);
+		System.out.println("user: "+userId);
+		System.out.println("user from database: "+bookRepo.getUserIdFromBorrowRecord(borrowingRecordId));
+		if(userId.equals(bookRepo.getUserIdFromBorrowRecord(borrowingRecordId))) {//檢查是不是借書的人來還
 			try {
-				
-				return bookRepo.returnABook(borrowRecordId,new Date()); //回傳 0 是成功
+				System.out.println("檢查成功");
+				return bookRepo.returnABook(borrowingRecordId,new Date()); //回傳 0 是成功
 			}catch(Exception e) {
 				e.printStackTrace();
 				return null;
 			}
 		}
+		System.out.println("沒有出現exception");
 		return null;
 	}
 

@@ -1,5 +1,7 @@
 package com.kevin.library.interceptor;
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -15,27 +17,92 @@ public class JwtInterceptor implements HandlerInterceptor {
 @Autowired
 private JwtService jwtService;
 
-public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
- 
+//public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+// 
+//    String authHeader = request.getHeader("Authorization");
+//
+//    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+//        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//        response.setContentType("application/json;charset=UTF-8");
+//        response.getWriter().write("{\"message\": \"Missing or invalid Authorization header.\"}");
+//        System.out.print("沒有 auth header");
+//        return false;
+//    }
+//
+//    String token = authHeader.substring(7);
+//
+//    //驗證Token是否有效
+//    if (!jwtService.validateToken(token)) {
+//        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//        response.setContentType("application/json;charset=UTF-8");
+//        response.getWriter().write("{\"message\": \"Invalid JWT token.\"}");
+//        System.out.print("validateToken 沒過");
+//        return false;
+//    }
+//    Integer userId = jwtService.getUserIdFromToken(token);
+//
+//    if (userId == null) {
+//        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//        response.getWriter().write("{\"success\": false, \"message\": \"Invalid token\"}");
+//        System.out.print("userId null");
+//        return false;
+//    }
+//
+//    // 把 userId 存入 request
+//    request.setAttribute("userId", userId);
+//
+//    return true; 
+//}
+
+@Override
+public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
+
+   // 允許 OPTIONS，避免 CORS 被阻擋
+    if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+        response.setStatus(HttpServletResponse.SC_OK);
+        return true; 
+    }
+
     String authHeader = request.getHeader("Authorization");
 
+    // 沒有 Authorization，回傳 401 
     if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setContentType("application/json;charset=UTF-8");
-        response.getWriter().write("{\"message\": \"Missing or invalid Authorization header.\"}");
+    	System.out.println("沒有Authorization");
+        sendUnauthorizedResponse(response, "Missing or invalid Authorization header.");
         return false;
     }
 
     String token = authHeader.substring(7);
 
-    //驗證Token是否有效
+    // Token 驗證失敗，回傳 401 
     if (!jwtService.validateToken(token)) {
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setContentType("application/json;charset=UTF-8");
-        response.getWriter().write("{\"message\": \"Invalid JWT token.\"}");
+    	System.out.println("Token 驗證失敗");
+        sendUnauthorizedResponse(response, "Invalid JWT token.");
+        return false;
+    }
+    
+    if (jwtService.isTokenBlacklisted(token)) {
+    	System.out.println("Token 驗證失敗");
+        sendUnauthorizedResponse(response, "Out Dated JWT token.");
+        return false;
+    }
+    
+
+    Integer userId = jwtService.getUserIdFromToken(token);
+    if (userId == null) {
+        sendUnauthorizedResponse(response, "Invalid token.");
         return false;
     }
 
-    return true; 
+    // 把 userId 存入 request
+    request.setAttribute("userId", userId);
+    return true;
 }
+
+	//處理 401 Unauthorized`
+	private void sendUnauthorizedResponse(HttpServletResponse response, String message) throws IOException {
+	    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+	    response.setContentType("application/json;charset=UTF-8");
+	    response.getWriter().write("{\"success\": false, \"message\": \"" + message + "\"}");
+	}
 }

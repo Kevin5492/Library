@@ -28,7 +28,7 @@ class LibraryApplicationTests {
 		System.out.println(userRepo.getPassword("0987654321"));
 		System.out.println(userService.checkPassword("0987654321","123"));
 		System.out.println("有呼叫1");
-		System.out.println(bookService.getBorrowableBooks());
+		System.out.println(bookService.getBorrowableBooks(""));
 		System.out.println(bookRepo.checkIfBookIsEnough("978-0-13-235088-4"));
 		;
 	}
