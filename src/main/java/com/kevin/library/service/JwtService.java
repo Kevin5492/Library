@@ -52,7 +52,7 @@ public class JwtService {
     public String generateToken(Integer userId) throws Exception{
     	 LocalDateTime dateTime = LocalDateTime.now().plusMinutes(10);
          Date expireTime = Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
-
+System.out.print("產生Token userId: "+userId);
          return Jwts.builder()
                  .claim("userId", userId)
                  .setExpiration(expireTime)

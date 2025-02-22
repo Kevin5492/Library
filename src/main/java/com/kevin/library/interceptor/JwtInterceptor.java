@@ -19,9 +19,10 @@ private JwtService jwtService;
 
 @Override
 public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
-
+	System.out.println("有觸發攔截器");
    // 允許 OPTIONS，避免 CORS 被阻擋
     if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+    	System.out.println("跑到這裡");
         response.setStatus(HttpServletResponse.SC_OK);
         return true; 
     }
@@ -45,7 +46,7 @@ public boolean preHandle(HttpServletRequest request, HttpServletResponse respons
     }
     
     if (jwtService.isTokenBlacklisted(token)) {
-    	System.out.println("Token 驗證失敗");
+    	System.out.println("Token 過期");
         sendUnauthorizedResponse(response, "Out Dated JWT token.");
         return false;
     }
@@ -53,6 +54,7 @@ public boolean preHandle(HttpServletRequest request, HttpServletResponse respons
 
     Integer userId = jwtService.getUserIdFromToken(token);
     if (userId == null) {
+    	System.out.println("token不正確");
         sendUnauthorizedResponse(response, "Invalid token.");
         return false;
     }

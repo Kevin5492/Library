@@ -49,6 +49,7 @@ public class UserController {
 		System.out.print("有被呼叫"); //測試有沒有被呼叫
 		try {
 			UserReponseDTO result = userService.checkPassword( request.getPhoneNumber(), request.getPassword());
+			System.out.print("user id "+result.userId());
 			if (result.success()) {
 				String token = jwtService.generateToken(result.userId());
 
