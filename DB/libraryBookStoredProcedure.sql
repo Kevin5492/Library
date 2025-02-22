@@ -185,3 +185,24 @@ BEGIN
 	from borrowing_record 
 	where borrowing_record_id = @borrowRecordId
 END
+
+go
+
+CREATE PROCEDURE GetReturnRecord
+@userId int
+as
+Begin
+   Select
+			b.isbn,
+			i.inventory_id,
+			b.[name],
+			b.author,
+			b.introduction, 
+			br.return_time,
+			br.borrowing_record_id
+   from borrowing_record as br
+   left join inventory as i on i.inventory_id = br.inventory_id 
+   join book as b on b.isbn = i.isbn
+   where br.[user_id] = @userId and br.return_time IS NOT NULL;
+END
+go
