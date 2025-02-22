@@ -8,7 +8,8 @@ public record BookResponseDTO( //有關書的請求的回覆
 		Boolean success,
 		String mssg,
 		List<BorrowableBooksDTO> borrowableBookList, // 所有可以借的書
-		List<CurrentBorrowBooksDTO> currentBorrowedBookList // 所有已經借的書
+		List<CurrentBorrowBooksDTO> currentBorrowedBookList, // 所有已經借的書
+		List<ReturnRecordDTO> returnRecordList
 		) {
 
 }
