@@ -62,11 +62,10 @@ public class UserService {
 		try {
 			
 			if(pwdEncoder.matches(password,userRepo.getPassword(phoneNumber))) {
-				System.out.println("密碼正確");
 				Date currentTime = new Date();
 				return new UserReponseDTO(true,"密碼正確",userRepo.getUserIdAndSetLoginTime(phoneNumber,currentTime));
 			}
-			System.out.println("密碼不正確");
+	
 			return new UserReponseDTO(false,"密碼錯誤",null);
 		}catch(Exception e) {
 			e.printStackTrace();
