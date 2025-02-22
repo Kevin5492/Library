@@ -4,7 +4,7 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-public record CurrentBorrowBooksDTO(
+public record CurrentBorrowBooksDTO( // 每一筆已經借的書
 		String isbn, 
 		Integer inventoryId,
 		String name, 

@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class BookRequestDTO {
+public class BookRequestDTO { //跟書有關的request
 	private String searchInput;
 	private Integer borrowingRecordId;
 	private String isbn;

@@ -25,14 +25,14 @@ public class AppConfig implements WebMvcConfigurer{
 	private String allowedOrigins;
 	
 	@Bean
-	PasswordEncoder passwordEncoder() {
+	PasswordEncoder passwordEncoder() { // 加密輸入的密碼
 		return new BCryptPasswordEncoder();
 	}
 			@Override
-			public void addInterceptors(@NonNull InterceptorRegistry registry) {
+			public void addInterceptors(@NonNull InterceptorRegistry registry) { 
 				
-				registry.addInterceptor(jwtInterceptor)
-				.addPathPatterns("/book/showBorrowedBook")
+				registry.addInterceptor(jwtInterceptor) //添加攔截器
+				.addPathPatterns("/book/showBorrowedBook")//添加攔截路徑
 				.addPathPatterns("/book/borrowABook")
 				.addPathPatterns("/book/returnABook");
 			}

@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,15 +47,17 @@ public class UserService {
 			try {
 				String encodedPwd = pwdEncoder.encode(password);
 				return new UserReponseDTO(true,"新增成功",userRepo.insertUser(phoneNumber,encodedPwd,userName));
-			}catch(Exception e) {
+			}catch (DataIntegrityViolationException e) {
+	            return new UserReponseDTO(false, "手機號碼已存在（請稍後重試）", null); //用來檢查資料庫插入會不會因為競爭出錯
+	        } catch(Exception e) {
 				e.printStackTrace();
 				return new UserReponseDTO(false,"新增失敗",null);
 			}
 		}
 		return new UserReponseDTO(false,"手機號碼已存在",null);
 	}
-	/*比對密碼*/
 	
+	//比對密碼
 	public UserReponseDTO checkPassword(String phoneNumber,String password) {
 		try {
 			

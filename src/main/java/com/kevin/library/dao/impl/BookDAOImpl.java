@@ -32,7 +32,7 @@ public class BookDAOImpl implements BookDAO {
 		            (String) row[1],  // name
 		            (String) row[2],  // author
 		            (String) row[3],  // introduction
-		            ((Number) row[4]).intValue()  // borrowable
+		            ((Number) row[4]).intValue()  // borrowable 數量
 		    )).collect(Collectors.toList());
 		    
 		    System.out.println("Size:" + dtos.size());

@@ -17,43 +17,6 @@ public class JwtInterceptor implements HandlerInterceptor {
 @Autowired
 private JwtService jwtService;
 
-//public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-// 
-//    String authHeader = request.getHeader("Authorization");
-//
-//    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-//        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//        response.setContentType("application/json;charset=UTF-8");
-//        response.getWriter().write("{\"message\": \"Missing or invalid Authorization header.\"}");
-//        System.out.print("沒有 auth header");
-//        return false;
-//    }
-//
-//    String token = authHeader.substring(7);
-//
-//    //驗證Token是否有效
-//    if (!jwtService.validateToken(token)) {
-//        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//        response.setContentType("application/json;charset=UTF-8");
-//        response.getWriter().write("{\"message\": \"Invalid JWT token.\"}");
-//        System.out.print("validateToken 沒過");
-//        return false;
-//    }
-//    Integer userId = jwtService.getUserIdFromToken(token);
-//
-//    if (userId == null) {
-//        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//        response.getWriter().write("{\"success\": false, \"message\": \"Invalid token\"}");
-//        System.out.print("userId null");
-//        return false;
-//    }
-//
-//    // 把 userId 存入 request
-//    request.setAttribute("userId", userId);
-//
-//    return true; 
-//}
-
 @Override
 public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
 

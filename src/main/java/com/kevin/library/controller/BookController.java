@@ -32,7 +32,7 @@ public class BookController {
 	
 	@PostMapping("/showAllBooks") //顯示所有可以借閱的書
 	public ResponseEntity<BookResponseDTO>showAllBorrowableBooks(@RequestBody BookRequestDTO requestDTO) {
-		String searchInput = requestDTO.getSearchInput() ==null ? "" : requestDTO.getSearchInput();
+		String searchInput = requestDTO.getSearchInput() ==null ? "" : requestDTO.getSearchInput(); // 拿到搜尋內容 並確保不是空值
 		
 			List<BorrowableBooksDTO> bookList = bookService.getBorrowableBooks(searchInput);
 			if(bookList!=null) {
@@ -71,6 +71,10 @@ public class BookController {
 		
 	        Integer userId = (Integer) request.getAttribute("userId");
 	        Integer borrowingRecordId = requestDTO.getBorrowingRecordId();
+	        if(borrowingRecordId == null ) {
+	        	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                    .body(new BookResponseDTO(false, "您歸還的書籍並不正確", null,null));
+	        }
 	        Integer result = bookService.returnABook(borrowingRecordId,userId);
 	        if(result == null ) {
 	        	System.out.println("是null");
