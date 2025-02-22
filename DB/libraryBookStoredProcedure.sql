@@ -1,5 +1,6 @@
 use library
 -- 顯示所有有庫存而且可以借閱的書
+go
 CREATE PROCEDURE GetBorrowableBooks
 AS
 BEGIN
